@@ -11,6 +11,7 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'rubocop-rails', require: false
 
+gem 'httparty', '~> 0.20.0'
 gem 'rack-cors'
 
 group :development, :test do
