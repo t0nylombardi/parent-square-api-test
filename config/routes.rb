@@ -5,5 +5,6 @@ Rails.application.routes.draw do
   # root "articles#index"
   namespace :v1 do
     post '/message', to: 'message#index'
+    post '/callback', to: 'message#callback'
   end
 end

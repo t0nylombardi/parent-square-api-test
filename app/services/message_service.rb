@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 require 'httparty'
+require 'faraday'
+require 'uri'
 
 # algorithm for the weighted random url call was taken by emumberabl#max_by
 # Note: Not sure how to test the weighted call via rspec. However here is 
@@ -25,16 +27,22 @@ class MessageService < ApplicationService
     begin
       # lambda that randomly returns a key from WEIGHTS in proportion to its weight
       wrs = -> { WEIGHTS.max_by { |_, weight| rand ** (1.0 / weight) }.first }
-      HTTParty.post("#{API_URL}/#{wrs.call}",
-                    body: {
-                      to_number: @phone_number,
-                      message: @message,
-                      callback_url: 'http://localhost:3000/callback'
-                    })
-    rescue HTTParty::Error
+      body = {
+        to_number: @phone_number,
+        message: @message,
+        callback_url: 'https://97af-69-118-172-165.ngrok.io/v1/callback'
+      }
+
+      headers = {
+        'Content-Type' => 'application/json'
+      }
+      HTTParty.post("#{API_URL}#{wrs.call}",
+                    body: body.to_json,
+                    headers:)
+    rescue StandardError => e
       tries += 1
       retry if tries <= 3
-      Rails.logger.info 'API not available'
+      Rails.logger.info "API not available: #{e}"
     end
   end
 end
